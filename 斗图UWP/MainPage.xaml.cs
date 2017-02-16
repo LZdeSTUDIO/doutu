@@ -140,10 +140,17 @@ namespace 斗图UWP
                 await new MessageDialog(ex.Message, "失败！").ShowAsync();
             }
         }
-        private void share_Click(object sender, RoutedEventArgs e)
-        {
-            ShareIma();
-        }
 
+        private void BottomItem_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var appButton = (AppBarButton)sender;
+            var lable = appButton.Label.ToString();
+            switch (lable)
+            {
+                case "分享":
+                    ShareIma();
+                    break;
+            }
+        }
     }
 }

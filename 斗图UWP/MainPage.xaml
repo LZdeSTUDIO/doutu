@@ -6,6 +6,34 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    <Page.BottomAppBar>
+        <CommandBar>
+            <CommandBar.Content>
+                <Grid Width="360" HorizontalAlignment="Center">
+                    <Grid Width="340" HorizontalAlignment="Center" Margin="0,7,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <AppBarButton Icon="Save" Label="保存" Grid.Column="0"
+                                      Tapped="BottomItem_Tapped"
+                                      />
+                        <AppBarButton Icon="Copy" Label="复制" Grid.Column="1"
+                                      Tapped="BottomItem_Tapped"
+                                      />
+                        <AppBarButton Icon="Find" Label="搜索" Grid.Column="2"
+                                      Tapped="BottomItem_Tapped"
+                                      />
+                        <AppBarButton Icon="Send" Label="分享" Grid.Column="3"
+                                      Tapped="BottomItem_Tapped" 
+                                      />
+                    </Grid>
+                </Grid>
+            </CommandBar.Content>
+        </CommandBar>
+    </Page.BottomAppBar>
 
     <Grid Background="White">
 
@@ -17,10 +45,6 @@
             <Image Height="200" Width="200" Source="/Assets/StoreLogo.png"
                Name="test" Tapped="test_Tapped"               
                />
-            <Button Name="share" Content="分享" Background="WhiteSmoke"
-                    HorizontalAlignment="Center" Margin="10"
-                    Click="share_Click"
-                    />
         </StackPanel>
 
     </Grid>
