@@ -11,6 +11,9 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Imaging;
 using System.Threading.Tasks;
+using Windows.UI.ViewManagement;
+using Windows.UI;
+using System.Collections.ObjectModel;
 
 //“空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409 上有介绍
 
@@ -23,6 +26,12 @@ namespace 斗图UWP
     {
         public static int BlurEffectConunt = 5;
 
+        private ObservableCollection<ListInfo> ListSorce;
+        private ObservableCollection<EmojiUiContent> WordsListSorce;
+
+        private StorageFile CurrentFile=null;
+        private string CurrentStr=null;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -33,10 +42,61 @@ namespace 斗图UWP
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
             BlurEffectInit();
+            setStateBar();
+            InitEmojiIma();
+            InitEmojiWords();
+        }
+
+        private void InitEmojiWords()
+        {
+            WordsListSorce = new ObservableCollection<EmojiUiContent>();
+            EmojiWords.ItemsSource = WordsListSorce;
+            string[] EmojiWordsList = { "MDZZ", "你咋不上天", "Lumia", "跟党走", "我爱你", "去死吧", "楼上智障", "我们走" };
+            foreach (var str in EmojiWordsList)
+            {
+                WordsListSorce.Add(new EmojiUiContent()
+                {
+                    words = str
+                });
+            }
+        }
+
+        private async void InitEmojiIma()
+        {
+            ListSorce = new ObservableCollection<ListInfo>();
+            Emoji.ItemsSource = ListSorce;
+            try
+            {
+                var fileTemp = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Emoji/e1.jpg"));
+                var folder = await fileTemp.GetParentAsync();
+                var files = await folder.GetFilesAsync();
+                foreach (var file in files)
+                {
+                    var temp = new ListInfo();
+                    temp.name = file.Name;
+                    var ima = new BitmapImage(new Uri(file.Path, UriKind.Absolute));
+                    temp.ima = ima;
+                    ListSorce.Add(temp);
+                }
+            }
+            catch (Exception)
+            {
+            }
         }
 
         #region 页面事件
 
+        private async void setStateBar()
+        {
+            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                var stateBar = StatusBar.GetForCurrentView();
+                await stateBar.ShowAsync();
+                stateBar.BackgroundOpacity = 1;
+                stateBar.BackgroundColor = Colors.WhiteSmoke;
+                stateBar.ForegroundColor = Colors.Black;
+            }
+        }
         private void sWord_GotFocus(object sender, RoutedEventArgs e)
         {
             inputGetFocus.Visibility = Visibility.Visible;
@@ -80,8 +140,8 @@ namespace 斗图UWP
         #region 背景模糊
         private async void BlurEffectInit()
         {
-            var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Pics/LZ.png"));
-            BlurEffectInit(file);
+            CurrentFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/StoreLogo.png"));
+            BlurEffectInit(CurrentFile);
         }
         private async void BlurEffectInit(StorageFile file)
         {
@@ -165,29 +225,38 @@ namespace 斗图UWP
 
         private async void MakeIma()
         {
+            if (NetImaProgress.IsActive)
+            {
+                return;
+            }
+
+            NetImaProgress.IsActive = !NetImaProgress.IsActive;
             try
             {
-                var file = await new NetIma().getIma(@"http://legendzealot.xyz/addTXTImage/index.php?words=" + sWord.Text);
-            using (IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read))
-            {
-                BitmapImage b = new BitmapImage();
-                b.SetSource(stream);
-                test.Source = b;
+                var file = await new NetIma().getIma(@"http://legendzealot.xyz/addTXTImage/index.php?words=" + CurrentStr+"&file="+CurrentFile.Name);
+                using (IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read))
+                {
+                    BitmapImage b = new BitmapImage();
+                    b.SetSource(stream);
+                    test.Source = b;
+                }
+                sWord.Text = string.Empty;
+                try
+                {
+                    BlurEffectInit(file);
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                NetImaProgress.IsActive = !NetImaProgress.IsActive;
             }
-            try
-            {
-                BlurEffectInit(file);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
             catch (Exception ex)
             {
                 await new MessageDialog(ex.Message, "失败！").ShowAsync();
-    }
-}
+                NetImaProgress.IsActive = !NetImaProgress.IsActive;
+            }
+        }
 
         private void BottomItem_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -202,6 +271,44 @@ namespace 斗图UWP
                     MakeIma();
                     break;                    
             }
+        }
+
+        private async void Emoji_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            try
+            {
+                var info = (ListInfo)e.ClickedItem;
+                var path = "ms-appx:///Emoji/" + info.name;
+                CurrentFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(path));
+                using (IRandomAccessStream stream = await CurrentFile.OpenAsync(FileAccessMode.Read))
+                {
+                    BitmapImage b = new BitmapImage();
+                    b.SetSource(stream);
+                    test.Source = b;
+                }
+                BlurEffectInit(CurrentFile);
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message,"切换出错").ShowAsync();
+            }
+        }
+
+        private void EmojiWordsDelect_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+        }
+
+        private void EmojiWords_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var temp = (EmojiUiContent)e.ClickedItem;
+            CurrentStr = temp.words;
+            MakeIma();
+        }
+
+        private void sWord_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CurrentStr = sWord.Text;
         }
     }
 }

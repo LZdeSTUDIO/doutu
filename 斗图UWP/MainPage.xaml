@@ -9,11 +9,11 @@
     <Page.Resources>
         <Storyboard x:Name="BackgroundCHange">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)" Storyboard.TargetName="back">
-                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1.5"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.35" Value="5"/>
                 <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)" Storyboard.TargetName="back">
-                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1.5"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.35" Value="5"/>
                 <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
             </DoubleAnimationUsingKeyFrames>
             <!--<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="back">
@@ -21,6 +21,14 @@
                 <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
             </DoubleAnimationUsingKeyFrames>-->
         </Storyboard>
+        
+        <ItemsPanelTemplate x:Key="EmojiItemsPanelTemplate">
+            <VirtualizingStackPanel Orientation="Horizontal"
+                VerticalAlignment="Top"
+                ScrollViewer.HorizontalScrollMode="Enabled"
+                ScrollViewer.VerticalScrollMode="Disabled"/>
+        </ItemsPanelTemplate>
+        
     </Page.Resources>
 
     <Page.BottomAppBar>
@@ -84,23 +92,94 @@
 
     <Grid Background="White">
 
-        <Image VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+
+        <Grid Name="Preview" Grid.Row="1">
+            <Image VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                Stretch="UniformToFill" Name="back" RenderTransformOrigin="0.5,0.5" 
                >
-            <Image.RenderTransform>
-                <CompositeTransform/>
-            </Image.RenderTransform>
-        </Image>
-
-        <StackPanel VerticalAlignment="Top"
-                    Margin="0,60,0,0"
-                    >
-            <Image Height="250" Width="250" Source="/Pics/LZ.png"
-               Name="test" Tapped="test_Tapped"               
+                <Image.RenderTransform>
+                    <CompositeTransform/>
+                </Image.RenderTransform>
+            </Image>
+            <Grid Height="250" Width="250">
+                <Image Height="250" Width="250" Source="/Assets/StoreLogo.png"
+                   Name="test" Tapped="test_Tapped"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
                />
-        </StackPanel>
-    
-        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                <ProgressRing Name="NetImaProgress"
+                              Height="80" Width="80" IsActive="False"
+                              />
+            </Grid>
+        </Grid>
+
+        <ListView Name="Emoji"
+                  Grid.Row="2"
+                  Height="100"
+                  Background="WhiteSmoke"
+                  VerticalAlignment="Bottom"
+                  SelectionMode="None" IsItemClickEnabled="True"
+                  BorderThickness="1" BorderBrush="White"
+                  ScrollViewer.HorizontalScrollMode="Enabled" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                  ScrollViewer.VerticalScrollMode="Disabled"
+                  ItemsPanel="{StaticResource EmojiItemsPanelTemplate}"
+                  ItemClick="Emoji_ItemClick"
+                  >
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="2,5" Background="Black"
+                         Width="90"  Height="90">
+                        <Image Width="90"  Height="90" Source="{Binding ima}"
+                               Stretch="UniformToFill"
+                               RequestedTheme="Light"/>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ListView>
+
+        <ListView Name="EmojiWords"
+                  Grid.Row="3"
+                  Height="50"
+                  Background="WhiteSmoke"
+                  VerticalAlignment="Bottom"
+                  SelectionMode="None" IsItemClickEnabled="True"
+                  BorderThickness="1" BorderBrush="White"
+                  ScrollViewer.HorizontalScrollMode="Enabled" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                  ScrollViewer.VerticalScrollMode="Disabled"
+                  ItemsPanel="{StaticResource EmojiItemsPanelTemplate}"
+                  ItemClick="EmojiWords_ItemClick"
+                  >
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal"  Margin="0,2">
+                        <Image Source="/Pics/left.png" Height="40"/>
+                        <StackPanel Background="LightGreen" 
+                            Height="40" 
+                            Orientation="Horizontal"
+                            >
+                            <TextBlock Text="{Binding words}" FontSize="22" 
+                               VerticalAlignment="Center" HorizontalAlignment="Center"
+                               Margin="0" 
+                               />
+                            <!--<Image Source="/Pics/delect.png"  Name="EmojiWordsDelect"
+                           HorizontalAlignment="Right" Margin="5" Tapped="EmojiWordsDelect_Tapped"
+                           />-->
+                        </StackPanel>
+                        <Image Source="/Pics/right.png" Height="40"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ListView>
+
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top"
+              Grid.Row="0"
               Name="InputGrid" Height="50" Background="Transparent">
             <Image Source="/Pics/whiteInput.png" Visibility="Visible"
                    Stretch="UniformToFill" Name="inputLostFocus"
@@ -110,10 +189,13 @@
                    VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
             <TextBox FontSize="20" Height="auto" Margin="5,0"
                      VerticalAlignment="Center" HorizontalAlignment="Stretch"
-                     InputScope="Chat" Name="sWord" Foreground="White"
-                     KeyDown="sWord_KeyDown" PlaceholderText="请输入文字"
+                     InputScope="Chat" Name="sWord"
+                     PlaceholderText="请输入自定义文字" 
+                     Foreground="Black"
+                     KeyDown="sWord_KeyDown" 
                      GotFocus="sWord_GotFocus"
                      LostFocus="sWord_LostFocus"
+                     TextChanged="sWord_TextChanged"
                      />
         </Grid>
 
