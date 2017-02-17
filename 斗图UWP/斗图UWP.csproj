@@ -110,6 +110,9 @@
     <None Include="斗图UWP_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Pics\green.png" />
+    <Content Include="Pics\LZ.png" />
+    <Content Include="Pics\whiteInput.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

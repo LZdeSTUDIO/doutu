@@ -21,7 +21,7 @@ namespace 斗图UWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        public static int BlurEffectConunt = 2;
+        public static int BlurEffectConunt = 5;
 
         public MainPage()
         {
@@ -35,14 +35,57 @@ namespace 斗图UWP
             BlurEffectInit();
         }
 
+        #region 页面事件
+
+        private void sWord_GotFocus(object sender, RoutedEventArgs e)
+        {
+            inputGetFocus.Visibility = Visibility.Visible;
+            inputLostFocus.Visibility = Visibility.Collapsed;
+        }
+
+        private void sWord_LostFocus(object sender, RoutedEventArgs e)
+        {
+            inputGetFocus.Visibility = Visibility.Collapsed;
+            inputLostFocus.Visibility = Visibility.Visible;
+        }
+
+        private void Commandbar_Closing(object sender, object e)
+        {
+            copyBoard.IsCompact = true;
+            speakResult.IsCompact = true;
+            changeDesLanguage.IsCompact = true;
+            appBarButtonTranslate.IsCompact = true;
+        }
+
+        private void Commandbar_Opened(object sender, object e)
+        {
+            copyBoard.IsCompact = false;
+            speakResult.IsCompact = false;
+            changeDesLanguage.IsCompact = false;
+            appBarButtonTranslate.IsCompact = false;
+        }
+
+        private void sWord_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+                return;
+            var temp = e.Key.ToString();
+            if (temp.Equals("Enter"))
+            {
+
+            }
+        }
+        #endregion
+
         #region 背景模糊
         private async void BlurEffectInit()
         {
-            var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/StoreLogo.png"));
+            var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Pics/LZ.png"));
             BlurEffectInit(file);
         }
         private async void BlurEffectInit(StorageFile file)
         {
+            BackgroundCHange.Begin();
             WriteableBitmap wb;
             wb = new WriteableBitmap(1000, 1000);
             // Ensure a file was selected
@@ -115,31 +158,36 @@ namespace 斗图UWP
         }
         #endregion
 
-        private async void test_Tapped(object sender, TappedRoutedEventArgs e)
+        private void test_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            MakeIma();
+        }
+
+        private async void MakeIma()
         {
             try
             {
-                var  file = await new NetIma().getIma(@"http://legendzealot.xyz/addTXTImage/index.php");
-                using (IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read))
-                {
-                    BitmapImage b = new BitmapImage();
-                    b.SetSource(stream);
-                    test.Source = b;
-                }
-                try
-                {
-                    BlurEffectInit(file);
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                var file = await new NetIma().getIma(@"http://legendzealot.xyz/addTXTImage/index.php?words=" + sWord.Text);
+            using (IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read))
+            {
+                BitmapImage b = new BitmapImage();
+                b.SetSource(stream);
+                test.Source = b;
             }
+            try
+            {
+                BlurEffectInit(file);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
             catch (Exception ex)
             {
                 await new MessageDialog(ex.Message, "失败！").ShowAsync();
-            }
-        }
+    }
+}
 
         private void BottomItem_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -150,6 +198,9 @@ namespace 斗图UWP
                 case "分享":
                     ShareIma();
                     break;
+                case "制作":
+                    MakeIma();
+                    break;                    
             }
         }
     }

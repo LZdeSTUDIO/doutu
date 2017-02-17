@@ -6,46 +6,116 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    <Page.Resources>
+        <Storyboard x:Name="BackgroundCHange">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)" Storyboard.TargetName="back">
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1.5"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)" Storyboard.TargetName="back">
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1.5"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <!--<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="back">
+                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0.5"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>-->
+        </Storyboard>
+    </Page.Resources>
+
     <Page.BottomAppBar>
-        <CommandBar>
+        <CommandBar Name="Commandbar"
+                    Closing="Commandbar_Closing" Opening="Commandbar_Opened"
+                    >
             <CommandBar.Content>
-                <Grid Width="360" HorizontalAlignment="Center">
-                    <Grid Width="340" HorizontalAlignment="Center" Margin="0,7,0,0">
+                <Grid Name="BottomGrid" Width="360">
+                    <Grid Height="65" 
+                      HorizontalAlignment="Center" VerticalAlignment="Top"
+                      Margin="0" Width="320">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <AppBarButton Icon="Save" Label="保存" Grid.Column="0"
-                                      Tapped="BottomItem_Tapped"
-                                      />
-                        <AppBarButton Icon="Copy" Label="复制" Grid.Column="1"
-                                      Tapped="BottomItem_Tapped"
-                                      />
-                        <AppBarButton Icon="Find" Label="搜索" Grid.Column="2"
-                                      Tapped="BottomItem_Tapped"
-                                      />
-                        <AppBarButton Icon="Send" Label="分享" Grid.Column="3"
-                                      Tapped="BottomItem_Tapped" 
-                                      />
+                        <AppBarButton Grid.Column="0" Icon="Copy" IsCompact="True" Label="复制" Name="copyBoard" 
+                                      Tapped="BottomItem_Tapped"/>
+                        <AppBarButton Grid.Column="1" Icon="Save" IsCompact="True"  Label="保存" Name="speakResult" 
+                                      Tapped="BottomItem_Tapped"/>
+                        <AppBarButton Grid.Column="2" Icon="Download" IsCompact="True"  Label="制作" Name="changeDesLanguage" 
+                                      Tapped="BottomItem_Tapped"/>
+                        <AppBarButton Grid.Column="3" Icon="Send" IsCompact="True"  Label="分享" Name="appBarButtonTranslate" 
+                                      Tapped="BottomItem_Tapped"/>
                     </Grid>
+                    <ScrollViewer Height="300" Margin="0,60,0,0" 
+                                  VerticalAlignment="Top">
+                        <StackPanel Background="Aqua"
+                                  Width="340" HorizontalAlignment="Center">
+
+                        </StackPanel>
+                    </ScrollViewer>
                 </Grid>
             </CommandBar.Content>
+
+            <CommandBar.SecondaryCommands>
+                <AppBarButton Name="Logo" Label="LZ_STUDIO"  
+                              Foreground="DodgerBlue" HorizontalAlignment="Center"
+                              />
+            </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
+
+    <!--<Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition>
+                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                    <CommonNavigationTransitionInfo  />
+                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+            </NavigationThemeTransition>
+        </TransitionCollection>
+    </Page.Transitions>-->
+
+    <Page.Transitions>
+        <TransitionCollection>
+            <EntranceThemeTransition FromHorizontalOffset="-500" 
+                                     FromVerticalOffset="0"  />
+        </TransitionCollection>
+    </Page.Transitions>
 
     <Grid Background="White">
 
         <Image VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-               Stretch="UniformToFill" Name="back" 
-               />
+               Stretch="UniformToFill" Name="back" RenderTransformOrigin="0.5,0.5" 
+               >
+            <Image.RenderTransform>
+                <CompositeTransform/>
+            </Image.RenderTransform>
+        </Image>
 
-        <StackPanel VerticalAlignment="Center">
-            <Image Height="200" Width="200" Source="/Assets/StoreLogo.png"
+        <StackPanel VerticalAlignment="Top"
+                    Margin="0,60,0,0"
+                    >
+            <Image Height="250" Width="250" Source="/Pics/LZ.png"
                Name="test" Tapped="test_Tapped"               
                />
         </StackPanel>
+    
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+              Name="InputGrid" Height="50" Background="Transparent">
+            <Image Source="/Pics/whiteInput.png" Visibility="Visible"
+                   Stretch="UniformToFill" Name="inputLostFocus"
+                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+            <Image Source="/Pics/green.png"  Visibility="Collapsed"
+                   Stretch="UniformToFill" Name="inputGetFocus"
+                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+            <TextBox FontSize="20" Height="auto" Margin="5,0"
+                     VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                     InputScope="Chat" Name="sWord" Foreground="White"
+                     KeyDown="sWord_KeyDown" PlaceholderText="请输入文字"
+                     GotFocus="sWord_GotFocus"
+                     LostFocus="sWord_LostFocus"
+                     />
+        </Grid>
 
     </Grid>
 </Page>
