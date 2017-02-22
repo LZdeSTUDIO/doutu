@@ -51,16 +51,16 @@
                 <Grid Name="BottomGrid" Width="360"
                       Background="WhiteSmoke"
                       >
-                    <Grid Height="65" 
+                    <Grid Height="70" 
                       HorizontalAlignment="Center" VerticalAlignment="Top"
-                      Margin="0" Width="250">
+                      Margin="0" Width="300">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <AppBarButton Grid.Column="0" Icon="Refresh" IsCompact="True" Label="刷新" Name="copyBoard" 
+                        <AppBarButton Grid.Column="0" Icon="Copy" IsCompact="True" Label="复制" Name="copyBoard" 
                                       Tapped="BottomItem_Tapped"/>
                         <AppBarButton Grid.Column="1" Icon="Save" IsCompact="True"  Label="保存" Name="speakResult" 
                                       Tapped="BottomItem_Tapped"/>
@@ -72,39 +72,109 @@
                     <ScrollViewer  Margin="0,60,0,0" Height="150"
                                   VerticalAlignment="Top" Background="WhiteSmoke">
                         <StackPanel Background="Transparent"
-                                  Width="300"
+                                  Width="250"
                                     HorizontalAlignment="Center">
-                            <Grid Background="Gray" Margin="5">
-                                <TextBlock Text="打分本应用" FontSize="20"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"
-                                           Margin="5" Tapped="SecItemList_Tapped" 
-                                       />
-                            </Grid>
-                            <Grid Background="Gray" Margin="5">
-                                <TextBlock Text="提供建议" FontSize="20"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                            
+                            <Grid  Margin="5">
+                                <Grid  Grid.Column="1" Background="LightGray"
+                                            Height="40" >
+                                    <TextBlock Text="打分本应用" FontSize="20"
+                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
                                            Margin="5" Tapped="SecItemList_Tapped"
                                        />
+                                </Grid>
+                                <Image Source="/Pics/leftGray.png" Height="40" Width="20"
+                                       Grid.Column="0"
+                                       />
+                                <Image Source="/Pics/rightGray.png" Height="40" Width="20"
+                                       Grid.Column="2"
+                                       />
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
                             </Grid>
-                            <Grid Background="Gray" Margin="5">
-                                <TextBlock Text="鼓励开发者" FontSize="20"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                            <Grid  Margin="5">
+                                <Grid  Grid.Column="1" Background="LightGray"
+                                            Height="40" >
+                                    <TextBlock Text="提供建议" FontSize="20"
+                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
                                            Margin="5" Tapped="SecItemList_Tapped"
                                        />
+                                </Grid>
+                                <Image Source="/Pics/leftGray.png" Height="40" Width="20"
+                                       Grid.Column="0"
+                                       />
+                                <Image Source="/Pics/rightGray.png" Height="40" Width="20"
+                                       Grid.Column="2"
+                                       />
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
                             </Grid>
-                            <Grid Background="Gray" Margin="5">
-                                <TextBlock Text="关注开发者" FontSize="20"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                            <Grid  Margin="5">
+                                <Grid  Grid.Column="1" Background="LightGray"
+                                            Height="40" >
+                                    <TextBlock Text="鼓励开发者" FontSize="20"
+                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
                                            Margin="5" Tapped="SecItemList_Tapped"
                                        />
+                                </Grid>
+                                <Image Source="/Pics/leftGray.png" Height="40" Width="20"
+                                       Grid.Column="0"
+                                       />
+                                <Image Source="/Pics/rightGray.png" Height="40" Width="20"
+                                       Grid.Column="2"
+                                       />
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
                             </Grid>
-                            <Grid
-                                Background="Gray" Margin="5">
-                                <TextBlock Text="关于此应用" FontSize="20"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                            <Grid  Margin="5">
+                                <Grid  Grid.Column="1" Background="LightGray"
+                                            Height="40" >
+                                    <TextBlock Text="关注开发者" FontSize="20"
+                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
                                            Margin="5" Tapped="SecItemList_Tapped"
                                        />
+                                </Grid>
+                                <Image Source="/Pics/leftGray.png" Height="40" Width="20"
+                                       Grid.Column="0"
+                                       />
+                                <Image Source="/Pics/rightGray.png" Height="40" Width="20"
+                                       Grid.Column="2"
+                                       />
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
                             </Grid>
+                            <Grid  Margin="5">
+                                <Grid  Grid.Column="1" Background="LightGray"
+                                            Height="40" >
+                                    <TextBlock Text="关于此应用" FontSize="20"
+                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
+                                           Margin="5" Tapped="SecItemList_Tapped"
+                                       />
+                                </Grid>
+                                <Image Source="/Pics/leftGray.png" Height="40" Width="20"
+                                       Grid.Column="0"
+                                       />
+                                <Image Source="/Pics/rightGray.png" Height="40" Width="20"
+                                       Grid.Column="2"
+                                       />
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                            </Grid>      
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>
@@ -238,12 +308,12 @@
             </Grid>
             <Grid Name="AdGrid" Height="70" VerticalAlignment="Bottom"
                   Margin="0,0,0,20">
-                <TextBlock Text="广告仅在WIFI下显示" FontSize="25" Foreground="Red"
+                <TextBlock Text="求支持" FontSize="25" Foreground="Red"
                            VerticalAlignment="Center" HorizontalAlignment="Center"
                            />
                 <JiuYouAdUniversal:AdControl Margin="0" 
                     AdClick="AdControl_AdClick" IsCloseIconEnabled="False" HorizontalAlignment="Center"
-                    ApplicationKey="797f6366cd635aa2635098b39c055dff"   AdType="Banner"/>
+                    ApplicationKey="01bd15c1de3fd20b9f9762c991525e9c"   AdType="Banner"/>
             </Grid>
             <Grid Name="Tips" Height="20" VerticalAlignment="Bottom"
                   Background="Gray" 

@@ -27,13 +27,19 @@ namespace 斗图UWP
     public sealed partial class MainPage : Page
     {
         private static int BlurEffectConunt = 5;
-        //private static string AdId = "01bd15c1de3fd20b9f9762c991525e9c";
+        //private static string AdId = "01bd15c1de3fd20b9f9762c991525e9c" 797f6366cd635aa2635098b39c055dff;
 
         private ObservableCollection<ListInfo> ListSorce;
         private ObservableCollection<EmojiUiContent> WordsListSorce;
 
-        private StorageFile CurrentFile=null;
+        private WriteableBitmap new_bitmap;
+
+        private StorageFile CurrentFile = null;
+        private StorageFile CurrentFileLocal = null;
         private string CurrentStr=null;
+
+        private delegate void DoneEvent(byte[] result);
+        private event DoneEvent myDoneEventDelegate;
 
         public MainPage()
         {
@@ -42,15 +48,27 @@ namespace 斗图UWP
         }
 
         //初始化
-        private void MainPage_Loaded(object sender, RoutedEventArgs e)
+        private async void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            BlurEffectInit();
             setStateBar();
-            InitEmojiIma();
-            InitEmojiWords();
+            CurrentFileLocal = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Emoji/e1.jpg"));
+            myDoneEventDelegate += MainPage_myDoneEventDelegate;
+            await InitEmojiIma();
+            await InitEmojiWords();
+            BlurEffectInit();
         }
 
-        private async void InitEmojiWords()
+        private async void MainPage_myDoneEventDelegate(byte[] result)
+        {
+            // Open a stream to copy the image contents to the WriteableBitmap's pixel buffer 
+            using (Stream stream = new_bitmap.PixelBuffer.AsStream())
+            {
+                await stream.WriteAsync(result, 0, result.Length);
+            }
+            back.Source = new_bitmap;
+        }
+
+        private async Task InitEmojiWords()
         {
             WordsListSorce = new ObservableCollection<EmojiUiContent>();
             EmojiWords.ItemsSource = WordsListSorce;
@@ -88,7 +106,7 @@ namespace 斗图UWP
             //Task.Run(() => { WordWork(); });
         }
 
-        private async void InitEmojiIma()
+        private async Task InitEmojiIma()
         {
             ListSorce = new ObservableCollection<ListInfo>();
             Emoji.ItemsSource = ListSorce;
@@ -111,7 +129,7 @@ namespace 斗图UWP
                     //await this.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     //{
                     //});
-                    await Task.Delay(10);
+                    //await Task.Delay(10);
                 }
             }
             catch (Exception)
@@ -124,7 +142,7 @@ namespace 斗图UWP
         {
         }
 
-        public /*async*/ void WordWork()
+        public /*async */void WordWork()
         {
         }
 
@@ -152,6 +170,7 @@ namespace 斗图UWP
 
         private void sWord_GotFocus(object sender, RoutedEventArgs e)
         {
+            Commandbar.IsOpen = false;
             if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
                 Commandbar.Visibility = Visibility.Collapsed;
@@ -212,13 +231,20 @@ namespace 斗图UWP
             // Ensure a file was selected
             if (file != null)
             {
-                // Set the source of the WriteableBitmap to the image stream
-                using (IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.Read))
+                try
                 {
-                    await wb.SetSourceAsync(fileStream);
+                    // Set the source of the WriteableBitmap to the image stream
+                    using (IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.Read))
+                    {
+                        await wb.SetSourceAsync(fileStream);
+                    }
+                }
+                catch (Exception)
+                {
+                    return;
                 }
             }
-            WriteableBitmap new_bitmap = await BlurEffect.BitmapClone(wb);
+            new_bitmap = await BlurEffect.BitmapClone(wb);
             // 添加高斯滤镜效果
             MyImage mi = new MyImage(new_bitmap);
             GaussianBlurFilter filter = new GaussianBlurFilter();
@@ -238,12 +264,7 @@ namespace 斗图UWP
                 result[j++] = (byte)(array[i] >> 16); // Red
                 result[j++] = (byte)(array[i] >> 24); // Alpha
             }
-            // Open a stream to copy the image contents to the WriteableBitmap's pixel buffer 
-            using (Stream stream = new_bitmap.PixelBuffer.AsStream())
-            {
-                await stream.WriteAsync(result, 0, result.Length);
-            }
-            back.Source = new_bitmap;
+            myDoneEventDelegate(result);
         }
         #endregion
 
@@ -286,32 +307,54 @@ namespace 斗图UWP
                 return;
             }
 
-            NetImaProgress.IsActive = !NetImaProgress.IsActive;
-            try
+            if (CurrentStr == null || CurrentStr == string.Empty)
             {
-                var file = await new NetIma().getIma(@"http://legendzealot.xyz/addTXTImage/index.php?words=" + CurrentStr+"&file="+CurrentFile.Name);
-                using (IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read))
+                using (IRandomAccessStream stream = await CurrentFileLocal.OpenAsync(FileAccessMode.Read))
                 {
                     BitmapImage b = new BitmapImage();
                     b.SetSource(stream);
                     test.Source = b;
                 }
+                BlurEffectInit(CurrentFileLocal);
+                return;
+            }
+
+            NetImaProgress.IsActive = !NetImaProgress.IsActive;
+            try
+            {
+                CurrentFile = await new NetIma().getIma(@"http://legendzealot.xyz/addTXTImage/index.php?words=" + CurrentStr + "&file=" + CurrentFileLocal.Name);
+            }
+            catch (Exception)
+            {
+                CurrentFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Emoji/e1.jpg"));
+            }
+            using (IRandomAccessStream stream = await CurrentFile.OpenAsync(FileAccessMode.Read))
+            {
+                BitmapImage b = new BitmapImage();
+                b.SetSource(stream);
+                test.Source = b;
+            }
+            try
+            {
                 sWord.Text = string.Empty;
                 try
                 {
+                    var local = ApplicationData.Current.LocalFolder;
+                    var folder = await local.CreateFolderAsync("斗图", CreationCollisionOption.OpenIfExists);
+                    var file = await folder.CreateFileAsync("tempCache" + ".png", CreationCollisionOption.ReplaceExisting);
+                    await CurrentFile.CopyAndReplaceAsync(file);
                     BlurEffectInit(file);
                 }
                 catch (Exception)
                 {
                     throw;
                 }
-                NetImaProgress.IsActive = !NetImaProgress.IsActive;
             }
             catch (Exception ex)
             {
                 await new MessageDialog(ex.Message, "失败！").ShowAsync();
-                NetImaProgress.IsActive = !NetImaProgress.IsActive;
             }
+            NetImaProgress.IsActive = !NetImaProgress.IsActive;
         }
 
         private async void BottomItem_Tapped(object sender, TappedRoutedEventArgs e)
@@ -320,14 +363,23 @@ namespace 斗图UWP
             var lable = appButton.Label.ToString();
             switch (lable)
             {
-                case "刷新":MakeIma(); break;
+                case "复制":
+                    if (NetImaProgress.IsActive)
+                        return;
+                    DataPackage dp = new DataPackage();
+                    dp.SetBitmap(RandomAccessStreamReference.CreateFromFile(CurrentFileLocal));
+                    Clipboard.SetContent(dp);
+                    await Task.Delay(1000);
+                    NetImaProgress.IsActive = false;
+                    break;
                 case "分享":ShareIma();break;
                 case "保存":
                     NetImaProgress.IsActive = true;
-                    StorageFolder storageFolder = KnownFolders.SavedPictures;
+                    StorageFolder storageFolder = KnownFolders.PicturesLibrary;
                     var DesFloder = await storageFolder.CreateFolderAsync("斗图UWP",CreationCollisionOption.OpenIfExists);
-                    var DesFile = await DesFloder.CreateFileAsync("",CreationCollisionOption.ReplaceExisting);
+                    var DesFile = await DesFloder.CreateFileAsync("斗图"+ DateTime.Now.TimeOfDay.Ticks.ToString()+new Random().Next(1,3000).ToString()+".png",CreationCollisionOption.ReplaceExisting);
                     await CurrentFile.CopyAndReplaceAsync(DesFile);
+                    await Task.Delay(1000);
                     NetImaProgress.IsActive = !NetImaProgress.IsActive;
                     break;
                 case "制作":
@@ -340,39 +392,31 @@ namespace 斗图UWP
 
         private async void Emoji_ItemClick(object sender, ItemClickEventArgs e)
         {
-            if (NetImaProgress.IsActive)
-            {
-                return;
-            }
             try
             {
                 var info = (ListInfo)e.ClickedItem;
                 var path = "ms-appx:///Emoji/" + info.name;
-                CurrentFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(path));
-                BlurEffectInit(CurrentFile);
-                if (CurrentStr != null)
-                {
-                    MakeIma();
-                    return;
-                }
-                using (IRandomAccessStream stream = await CurrentFile.OpenAsync(FileAccessMode.Read))
-                {
-                    BitmapImage b = new BitmapImage();
-                    b.SetSource(stream);
-                    test.Source = b;
-                }
+                CurrentFileLocal = await StorageFile.GetFileFromApplicationUriAsync(new Uri(path));
+                MakeIma();
             }
             catch (Exception ex)
             {
                 await new MessageDialog(ex.Message,"切换出错").ShowAsync();
             }
         }
-        
-        private void EmojiWords_ItemClick(object sender, ItemClickEventArgs e)
+
+        private async void EmojiWords_ItemClick(object sender, ItemClickEventArgs e)
         {
-            var temp = (EmojiUiContent)e.ClickedItem;
-            CurrentStr = temp.words;
-            MakeIma();
+            try
+            {
+                var temp = (EmojiUiContent)e.ClickedItem;
+                CurrentStr = temp.words;
+                MakeIma();
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog("错误代码："+ex.Message).ShowAsync();
+            }
         }
 
         private void AdControl_AdClick(object sender, JiuYouAdUniversal.Models.AdClickEventArgs e)

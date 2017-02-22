@@ -27,14 +27,14 @@
             <Image Source="/Assets/StoreLogo.png"/>
         </Grid>
 
-        <TextBlock Text="更多表情包与动态热词将陆续添加" Foreground="Black"
-                   FontSize="20"
-                   Margin="0,0,0,80"
+        <TextBlock Text="更多表情包与动态热词将陆续添加，敬请期待!" Foreground="Black"
+                   FontSize="20"  Width="300" TextWrapping="WrapWholeWords"
+                   Margin="0,0,0,80" TextAlignment="Center"
                    HorizontalAlignment="Center" VerticalAlignment="Bottom"
                    />
-        <TextBlock Text="斗图UWPV1.0" Foreground="Black"
-                   FontSize="25"
-                   Margin="0,0,0,30"
+        <TextBlock Text="斗图UWP V1.0  LZ_Studio保留所有权利" Foreground="Gray"
+                   FontSize="15"
+                   Margin="0,0,0,10"
                    HorizontalAlignment="Center" VerticalAlignment="Bottom"
                    />
     </Grid>
