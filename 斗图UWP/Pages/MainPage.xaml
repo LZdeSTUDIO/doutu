@@ -10,19 +10,28 @@
     
     mc:Ignorable="d">
     <Page.Resources>
-        <Storyboard x:Name="BackgroundCHange">
+        <Storyboard x:Name="BackgroundCHange" Completed="BackgroundCHange_Completed">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)" Storyboard.TargetName="back">
-                <EasingDoubleKeyFrame KeyTime="0:0:0.35" Value="5"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="5"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)" Storyboard.TargetName="back">
+                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="5"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="back">
+                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0.5"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        
+        <Storyboard x:Name="BackgroundCHangeBack">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)" Storyboard.TargetName="back">
                 <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)" Storyboard.TargetName="back">
-                <EasingDoubleKeyFrame KeyTime="0:0:0.35" Value="5"/>
                 <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
             </DoubleAnimationUsingKeyFrames>
-            <!--<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="back">
-                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0.5"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
-            </DoubleAnimationUsingKeyFrames>-->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="back">
+               <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
         </Storyboard>
 
         <ItemsPanelTemplate x:Key="EmojiItemsPanelTemplate">
@@ -74,7 +83,27 @@
                         <StackPanel Background="Transparent"
                                   Width="250"
                                     HorizontalAlignment="Center">
-                            
+
+                            <Grid  Margin="5">
+                                <Grid  Grid.Column="1" Background="LightGray"
+                                            Height="40" >
+                                    <TextBlock Text="更新表情包" FontSize="20"
+                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
+                                           Margin="5" Tapped="SecItemList_Tapped"
+                                       />
+                                </Grid>
+                                <Image Source="/Pics/leftGray.png" Height="40" Width="20"
+                                       Grid.Column="0"
+                                       />
+                                <Image Source="/Pics/rightGray.png" Height="40" Width="20"
+                                       Grid.Column="2"
+                                       />
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                            </Grid>
                             <Grid  Margin="5">
                                 <Grid  Grid.Column="1" Background="LightGray"
                                             Height="40" >
@@ -195,34 +224,68 @@
         </TransitionCollection>
     </Page.Transitions>
 
-    <Grid Background="White" SizeChanged="Grid_SizeChanged">
+    <SplitView IsPaneOpen="False"
+               OpenPaneLength="300"
+               PanePlacement="Right"
+               DisplayMode="Inline"
+               Name="splitView"
+               SizeChanged="SplitView_SizeChanged"
+               >
+        <SplitView.Pane>
+            <Frame Name="secFrame"></Frame>
+        </SplitView.Pane>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="100"/>
-            <RowDefinition Height="50"/>
-        </Grid.RowDefinitions>
+        <Grid>
 
-        <Grid Name="Preview" Grid.Row="0">
-            <Image VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+               <!--主grid-->
+                <Grid Background="White"
+                      Margin="0,0,0,0"                      
+                      SizeChanged="Grid_SizeChanged">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="100"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+
+
+
+                <Grid Name="Preview" Grid.Row="0">
+                    <Image VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                Stretch="UniformToFill" Name="back" RenderTransformOrigin="0.5,0.5" 
                >
-                <Image.RenderTransform>
-                    <CompositeTransform/>
-                </Image.RenderTransform>
-            </Image>
-            <Grid Height="250" Width="250">
-                <Image Height="250" Width="250" Source="/Emoji/e1.jpg"
-                   Name="test"
-                   HorizontalAlignment="Center" VerticalAlignment="Center"
-               />
-                <ProgressRing Name="NetImaProgress"
+                        <Image.RenderTransform>
+                            <CompositeTransform/>
+                        </Image.RenderTransform>
+                    </Image>
+                    <Grid Height="250" Width="250">
+                        <Grid  Margin="-1" Background="Blue"/>
+                        <Grid  Height="250" Width="250"   Name="pictureRoot"
+                   HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Image Height="250" Width="250" 
+                           Source="/Emoji/e1.png"
+                           Name="test" />
+                            <TextBlock Name="wordTextBlock" Text=""
+                                   FontSize="25" TextAlignment="Center"
+                                   TextWrapping="Wrap" Foreground="Blue"
+                                   VerticalAlignment="Center" HorizontalAlignment="Center"
+                                   ManipulationDelta="wordTextBlock_ManipulationDelta"
+                                   SizeChanged="wordTextBlock_SizeChanged"
+                                   TextTrimming="Clip"
+                                   ManipulationMode="All" MaxLines="1"
+                               />
+                            <TextBlock VerticalAlignment="Bottom"
+                                   Text="来自斗图UWP" Foreground="Gray" Visibility="Collapsed"
+                                   TextAlignment="Center" Height="20" Name="LogoTextBlock"
+                                   />
+                        </Grid>
+                        <ProgressRing Name="NetImaProgress"
                               Height="80" Width="80" IsActive="False"
                               />
-            </Grid>
-        </Grid>
+                    </Grid>
+                </Grid>
 
-        <ListView Name="Emoji"
+                <ListView Name="Emoji"
                   Grid.Row="1"
                   Height="100"
                   Background="WhiteSmoke"
@@ -235,19 +298,19 @@
                   ItemsPanel="{StaticResource EmojiItemsPanelTemplate}"
                   ItemClick="Emoji_ItemClick"
                   >
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="2,5" Background="Black"
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="2,5" Background="Black"
                          Width="90"  Height="90">
-                        <Image Width="90"  Height="90" Source="{Binding ima}"
+                                <Image Width="90"  Height="90" Source="{Binding ima}"
                                Stretch="UniformToFill"
                                RequestedTheme="Light"/>
-                    </Grid>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ListView>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ListView>
 
-        <ListView Name="EmojiWords"
+                <ListView Name="EmojiWords"
                   Grid.Row="3"
                   Height="50"
                   Background="WhiteSmoke"
@@ -260,42 +323,43 @@
                   ItemsPanel="{StaticResource EmojiItemsPanelTemplate}"
                   ItemClick="EmojiWords_ItemClick"
                   >
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal"  Margin="0,2">
-                        <Image Source="{Binding fIma}" Height="40" Width="20"/>
-                        <StackPanel Background="LightGreen" 
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal"  Margin="0,2">
+                                <Image Source="{Binding fIma}" Height="40" Width="20"/>
+                                <StackPanel Background="LightGreen" 
                             Height="40" 
                             Orientation="Horizontal"
                             >
-                            <TextBlock Text="{Binding words}" FontSize="22" 
+                                    <TextBlock Text="{Binding words}" FontSize="22" 
                                VerticalAlignment="Center" HorizontalAlignment="Center"
                                Margin="0" 
                                />
-                            <!--<Image Source="/Pics/delect.png"  Name="EmojiWordsDelect"
+                                    <!--<Image Source="/Pics/delect.png"  Name="EmojiWordsDelect"
                            HorizontalAlignment="Right" Margin="5" Tapped="EmojiWordsDelect_Tapped"
                            />-->
-                        </StackPanel>
-                        <Image Source="{Binding bIma}" Height="40" />
-                    </StackPanel>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ListView>
+                                </StackPanel>
+                                <Image Source="{Binding bIma}" Height="40" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ListView>
 
-        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                <!--输入栏-->
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top"
               Grid.Row="0" Height="140" Margin="0,-180,0,0"  Background="WhiteSmoke"
               Name="InputGrid" RenderTransformOrigin="0.5,0.5">
-            <Grid.RenderTransform>
-                <CompositeTransform/>
-            </Grid.RenderTransform>
-            <Grid Height="50" VerticalAlignment="Top">
-                <Image Source="/Pics/whiteInput.png" Visibility="Visible"
+                    <Grid.RenderTransform>
+                        <CompositeTransform/>
+                    </Grid.RenderTransform>
+                    <Grid Height="50" VerticalAlignment="Top">
+                        <Image Source="/Pics/whiteInput.png" Visibility="Visible"
                    Stretch="UniformToFill" Name="inputLostFocus"
                    VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-                <Image Source="/Pics/green.png"  Visibility="Collapsed"
+                        <Image Source="/Pics/green.png"  Visibility="Collapsed"
                    Stretch="UniformToFill" Name="inputGetFocus"
                    VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-                <TextBox FontSize="20" Height="auto" Margin="5,0"
+                        <TextBox FontSize="20" Height="auto" Margin="5,0"
                      VerticalAlignment="Center" HorizontalAlignment="Stretch"
                          Name="sWord"
                          InputScope="Url"
@@ -305,24 +369,28 @@
                      GotFocus="sWord_GotFocus"
                      LostFocus="sWord_LostFocus"
                      />
-            </Grid>
-            <Grid Name="AdGrid" Height="70" VerticalAlignment="Bottom"
+                    </Grid>
+                    <Grid Name="AdGrid" Height="70" VerticalAlignment="Bottom"
                   Margin="0,0,0,20">
-                <TextBlock Text="求支持" FontSize="25" Foreground="Red"
+                        <TextBlock Text="求支持" FontSize="25" Foreground="Red"
                            VerticalAlignment="Center" HorizontalAlignment="Center"
                            />
-                <JiuYouAdUniversal:AdControl Margin="0" 
+                        <JiuYouAdUniversal:AdControl Margin="0" 
                     AdClick="AdControl_AdClick" IsCloseIconEnabled="False" HorizontalAlignment="Center"
                     ApplicationKey="01bd15c1de3fd20b9f9762c991525e9c"   AdType="Banner"/>
-            </Grid>
-            <Grid Name="Tips" Height="20" VerticalAlignment="Bottom"
+                    </Grid>
+                    <Grid Name="Tips" Height="20" VerticalAlignment="Bottom"
                   Background="Gray" 
                   >
-                <TextBlock Text="请动一下手指，有效点击一次广告支持我吧"
+                        <TextBlock Text="请动一下手指，有效点击一次广告支持我吧"
                            HorizontalAlignment="Center" Name="TipsTextBlock"
                            />
+                    </Grid>
+                </Grid>
+
             </Grid>
         </Grid>
-
-    </Grid>
+        
+    </SplitView>
+    
 </Page>

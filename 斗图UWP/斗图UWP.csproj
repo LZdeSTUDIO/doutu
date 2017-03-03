@@ -21,7 +21,7 @@
     <AppxPackageDir>C:\Users\LZ\Desktop\</AppxPackageDir>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>CBD87F19E480DCF673FB315223E1D1D8810B1F1C</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>D784ADC5A3090D1184712F79E5B3C2BBD5694A84</PackageCertificateThumbprint>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
@@ -111,7 +111,7 @@
     <Compile Include="Pages\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Class\NetIma.cs" />
+    <Compile Include="NetIma.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -122,16 +122,13 @@
     <None Include="斗图UWP_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Emoji\e1.jpg" />
-    <Content Include="Emoji\e11.jpg" />
-    <Content Include="Emoji\e13.jpg" />
-    <Content Include="Emoji\e2.jpg" />
-    <Content Include="Emoji\e4.jpg" />
-    <Content Include="Emoji\e5 .jpg" />
-    <Content Include="Emoji\e6 .jpg" />
-    <Content Include="Emoji\e7.jpg" />
-    <Content Include="Emoji\e9.jpg" />
     <None Include="Package.StoreAssociation.xml" />
+    <Content Include="Emoji\e1.png" />
+    <Content Include="Emoji\e2.png" />
+    <Content Include="Emoji\e3.png" />
+    <Content Include="Emoji\e4.png" />
+    <Content Include="Emoji\e5.png" />
+    <Content Include="Emoji\e6.png" />
     <Content Include="Pics\delect.png" />
     <Content Include="Pics\green.png" />
     <Content Include="Pics\left.png" />

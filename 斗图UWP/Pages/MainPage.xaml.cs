@@ -16,6 +16,9 @@ using Windows.UI;
 using System.Collections.ObjectModel;
 using Windows.UI.Core;
 using Windows.System;
+using Windows.Graphics.Imaging;
+using Windows.Graphics.Display;
+using Windows.UI.Xaml.Media;
 
 //“空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409 上有介绍
 
@@ -27,7 +30,6 @@ namespace 斗图UWP
     public sealed partial class MainPage : Page
     {
         private static int BlurEffectConunt = 5;
-        //private static string AdId = "01bd15c1de3fd20b9f9762c991525e9c" 797f6366cd635aa2635098b39c055dff;
 
         private ObservableCollection<ListInfo> ListSorce;
         private ObservableCollection<EmojiUiContent> WordsListSorce;
@@ -35,11 +37,10 @@ namespace 斗图UWP
         private WriteableBitmap new_bitmap;
 
         private StorageFile CurrentFile = null;
-        private StorageFile CurrentFileLocal = null;
-        private string CurrentStr=null;
 
         private delegate void DoneEvent(byte[] result);
         private event DoneEvent myDoneEventDelegate;
+        private bool isPlay = false;
 
         public MainPage()
         {
@@ -51,7 +52,7 @@ namespace 斗图UWP
         private async void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
             setStateBar();
-            CurrentFileLocal = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Emoji/e1.jpg"));
+            //CurrentFileLocal = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Emoji/e1.jpg"));
             myDoneEventDelegate += MainPage_myDoneEventDelegate;
             await InitEmojiIma();
             await InitEmojiWords();
@@ -66,6 +67,7 @@ namespace 斗图UWP
                 await stream.WriteAsync(result, 0, result.Length);
             }
             back.Source = new_bitmap;
+            isPlay = false;
         }
 
         private async Task InitEmojiWords()
@@ -112,7 +114,7 @@ namespace 斗图UWP
             Emoji.ItemsSource = ListSorce;
             try
             {
-                var fileTemp = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Emoji/e1.jpg"));
+                var fileTemp = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Emoji/e1.png"));
                 var folder = await fileTemp.GetParentAsync();
                 var files = await folder.GetFilesAsync();
                 foreach (var file in files)
@@ -209,7 +211,7 @@ namespace 斗图UWP
             var temp = e.Key.ToString();
             if (temp.Equals("Enter"))
             {
-                CurrentStr = sWord.Text;
+                wordTextBlock.Text = sWord.Text;
                 sWord.Text = string.Empty;
                 sWord.IsEnabled = false;
                 MakeIma();
@@ -220,8 +222,8 @@ namespace 斗图UWP
         #region 背景模糊
         private async void BlurEffectInit()
         {
-            CurrentFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Emoji/e1.jpg"));
-            BlurEffectInit(CurrentFile);
+            var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Emoji/e1.png"));
+            BlurEffectInit(file);
         }
         private async void BlurEffectInit(StorageFile file)
         {
@@ -266,6 +268,11 @@ namespace 斗图UWP
             }
             myDoneEventDelegate(result);
         }
+        private void BackgroundCHange_Completed(object sender, object e)
+        {
+            while (isPlay) { };
+            BackgroundCHangeBack.Begin();
+        }
         #endregion
 
         #region 图片分享
@@ -275,21 +282,20 @@ namespace 斗图UWP
             dataTransferManager.DataRequested += DataTransferManager_DataRequested;
             DataTransferManager.ShowShareUI();
         }
-
         //从指定位置加载文件
         private async void DataTransferManager_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
         {
             try
             {
                 DataPackage requestData = args.Request.Data;
-                requestData.Properties.Title = "test";
-                requestData.Properties.Description = "content";
-                var local = ApplicationData.Current.LocalFolder;
-                var folder = await local.CreateFolderAsync("斗图", CreationCollisionOption.OpenIfExists);
-                var file = await folder.CreateFileAsync("temp" + ".png", CreationCollisionOption.OpenIfExists);
-                List<IStorageItem> imageItems = new List<IStorageItem> { file };
+                requestData.Properties.Title = "斗图UWP";
+                requestData.Properties.Description = "表情分享";
+                //var local = ApplicationData.Current.LocalFolder;
+                //var folder = await local.CreateFolderAsync("斗图", CreationCollisionOption.OpenIfExists);
+                //var file = await folder.CreateFileAsync("temp" + ".png", CreationCollisionOption.OpenIfExists);
+                List<IStorageItem> imageItems = new List<IStorageItem> { CurrentFile };
                 requestData.SetStorageItems(imageItems);
-                RandomAccessStreamReference imageStreamRef = RandomAccessStreamReference.CreateFromFile(file);
+                RandomAccessStreamReference imageStreamRef = RandomAccessStreamReference.CreateFromFile(CurrentFile);
                 requestData.Properties.Thumbnail = imageStreamRef;
                 requestData.SetBitmap(imageStreamRef);
             }
@@ -299,63 +305,52 @@ namespace 斗图UWP
             }
         }
         #endregion
-        
+
+        #region 制作表情
         private async void MakeIma()
         {
             if (NetImaProgress.IsActive)
             {
                 return;
             }
-
-            if (CurrentStr == null || CurrentStr == string.Empty)
-            {
-                using (IRandomAccessStream stream = await CurrentFileLocal.OpenAsync(FileAccessMode.Read))
-                {
-                    BitmapImage b = new BitmapImage();
-                    b.SetSource(stream);
-                    test.Source = b;
-                }
-                BlurEffectInit(CurrentFileLocal);
-                return;
-            }
-
+            isPlay = true;
+            sWord.Text = string.Empty;
             NetImaProgress.IsActive = !NetImaProgress.IsActive;
-            try
-            {
-                CurrentFile = await new NetIma().getIma(@"http://legendzealot.xyz/addTXTImage/index.php?words=" + CurrentStr + "&file=" + CurrentFileLocal.Name);
-            }
-            catch (Exception)
-            {
-                CurrentFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Emoji/e1.jpg"));
-            }
-            using (IRandomAccessStream stream = await CurrentFile.OpenAsync(FileAccessMode.Read))
-            {
-                BitmapImage b = new BitmapImage();
-                b.SetSource(stream);
-                test.Source = b;
-            }
-            try
-            {
-                sWord.Text = string.Empty;
-                try
-                {
-                    var local = ApplicationData.Current.LocalFolder;
-                    var folder = await local.CreateFolderAsync("斗图", CreationCollisionOption.OpenIfExists);
-                    var file = await folder.CreateFileAsync("tempCache" + ".png", CreationCollisionOption.ReplaceExisting);
-                    await CurrentFile.CopyAndReplaceAsync(file);
-                    BlurEffectInit(file);
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            }
-            catch (Exception ex)
-            {
-                await new MessageDialog(ex.Message, "失败！").ShowAsync();
-            }
+            await MakeEmoji();
+            BlurEffectInit(CurrentFile);
             NetImaProgress.IsActive = !NetImaProgress.IsActive;
         }
+        private async Task MakeEmoji()
+        {
+            var local = ApplicationData.Current.LocalFolder;
+            var folder = await local.CreateFolderAsync("斗图", CreationCollisionOption.OpenIfExists);
+            var sFile = await folder.CreateFileAsync("temp" + ".png", CreationCollisionOption.ReplaceExisting);
+            CachedFileManager.DeferUpdates(sFile);
+            //把控件变成图像  
+            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap();
+            //传入参数Image控件  
+            LogoTextBlock.Visibility = Visibility.Visible;
+            await renderTargetBitmap.RenderAsync(pictureRoot);
+            var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
+            LogoTextBlock.Visibility = Visibility.Collapsed;
+            using (var fileStream = await sFile.OpenAsync(FileAccessMode.ReadWrite))
+            {
+                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, fileStream);
+                encoder.SetPixelData(
+               BitmapPixelFormat.Bgra8,
+               BitmapAlphaMode.Ignore,
+               (uint)renderTargetBitmap.PixelWidth,
+               (uint)renderTargetBitmap.PixelHeight,
+               DisplayInformation.GetForCurrentView().LogicalDpi,
+               DisplayInformation.GetForCurrentView().LogicalDpi,
+               pixelBuffer.ToArray());
+                //刷新图像  
+                await encoder.FlushAsync();
+            }
+            CurrentFile = sFile;
+        }
+        #endregion
+
 
         private async void BottomItem_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -366,15 +361,19 @@ namespace 斗图UWP
                 case "复制":
                     if (NetImaProgress.IsActive)
                         return;
+                    NetImaProgress.IsActive = true;
+                    await MakeEmoji();
                     DataPackage dp = new DataPackage();
-                    dp.SetBitmap(RandomAccessStreamReference.CreateFromFile(CurrentFileLocal));
+                    dp.SetBitmap(RandomAccessStreamReference.CreateFromFile(CurrentFile));
                     Clipboard.SetContent(dp);
-                    await Task.Delay(1000);
                     NetImaProgress.IsActive = false;
                     break;
-                case "分享":ShareIma();break;
+                case "分享":
+                    await MakeEmoji();
+                    ShareIma();break;
                 case "保存":
                     NetImaProgress.IsActive = true;
+                    await MakeEmoji();
                     StorageFolder storageFolder = KnownFolders.PicturesLibrary;
                     var DesFloder = await storageFolder.CreateFolderAsync("斗图UWP",CreationCollisionOption.OpenIfExists);
                     var DesFile = await DesFloder.CreateFileAsync("斗图"+ DateTime.Now.TimeOfDay.Ticks.ToString()+new Random().Next(1,3000).ToString()+".png",CreationCollisionOption.ReplaceExisting);
@@ -396,7 +395,13 @@ namespace 斗图UWP
             {
                 var info = (ListInfo)e.ClickedItem;
                 var path = "ms-appx:///Emoji/" + info.name;
-                CurrentFileLocal = await StorageFile.GetFileFromApplicationUriAsync(new Uri(path));
+                var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri(path));
+                using (IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read))
+                {
+                    BitmapImage b = new BitmapImage();
+                    b.SetSource(stream);
+                    test.Source = b;
+                }
                 MakeIma();
             }
             catch (Exception ex)
@@ -410,7 +415,7 @@ namespace 斗图UWP
             try
             {
                 var temp = (EmojiUiContent)e.ClickedItem;
-                CurrentStr = temp.words;
+                wordTextBlock.Text = temp.words;
                 MakeIma();
             }
             catch (Exception ex)
@@ -433,14 +438,15 @@ namespace 斗图UWP
             await Windows.System.Launcher.LaunchUriAsync(new Uri("zune:search?publisher=LZ_Studio"));
         }
 
-        private void SecItemList_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void SecItemList_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var textBlock = (TextBlock)sender;
             var lable = textBlock.Text;
             switch (lable)
             {
+                case "更新表情包": await new MessageDialog("此功能将在下一个版本到来，敬请期待！").ShowAsync(); break;
                 case "提供建议": sendEmail(); break;
-                case "打分本应用":scoreApp(); break;
+                case "打分本应用": scoreApp(); break;
                 case "鼓励开发者": encourage(); break;
                 case "关注开发者": concern(); break;
                 case "关于此应用": Frame.Navigate(typeof(About)); break;
@@ -530,5 +536,64 @@ namespace 斗图UWP
         {
             BottomGrid.Width = this.ActualWidth;
         }
+
+        private void SplitView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (this.ActualWidth > 700)
+            {
+                if (splitView.IsPaneOpen == false)
+                {
+                    splitView.IsPaneOpen = true;
+                    secFrame.Navigate(typeof(About));
+                }
+                splitView.OpenPaneLength = this.ActualWidth / 2;
+            }
+            else
+            {
+                splitView.IsPaneOpen = false;
+            }
+        }
+
+
+        #region 文字移动相关
+        TranslateTransform dragTranslation;
+        double ImaFrameWidth = 0;
+        double ImaFrameHeight = 0;
+        double DelaX = 0;
+        double DelaY = 0;
+        private void wordTextBlock_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            DelaX += e.Delta.Translation.X;
+            DelaY += e.Delta.Translation.Y;
+            setPost();
+        }
+        private void wordTextBlock_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            DelaX = 0;
+            DelaY = 0;
+            setPost();
+        }
+        private void setPost()
+        {
+            var width = wordTextBlock.ActualWidth / 2;
+            var height = wordTextBlock.ActualHeight / 2;
+            if (ImaFrameWidth == 0 || ImaFrameHeight == 0)
+            {
+                ImaFrameWidth = pictureRoot.ActualWidth / 2;
+                ImaFrameHeight = pictureRoot.ActualHeight / 2;
+            }
+            if (dragTranslation == null)
+            {
+                dragTranslation = new TranslateTransform();
+            }
+            wordTextBlock.RenderTransform = dragTranslation;
+            var MaxX = ImaFrameWidth - width;
+            DelaX = Math.Abs(DelaX) > MaxX ? MaxX * DelaX / Math.Abs(DelaX) : DelaX;
+            var MaxY = ImaFrameHeight - height;
+            DelaY = Math.Abs(DelaY) > MaxY ? MaxY * DelaY / Math.Abs(DelaY) : DelaY;
+            dragTranslation.X = DelaX;
+            dragTranslation.Y = DelaY;
+        }
+        #endregion
     }
 }
