@@ -21,7 +21,6 @@
                 <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0.5"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
-        
         <Storyboard x:Name="BackgroundCHangeBack">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)" Storyboard.TargetName="back">
                 <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
@@ -30,25 +29,26 @@
                 <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="back">
-               <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
             </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Name="InputIn">
+            <DoubleAnimation Duration="0:0:0.4" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="InputGrid" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.4" To="220" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="InputGrid" d:IsOptimized="True"/>
+        </Storyboard>
+        <Storyboard x:Name="InputOut">
+            <DoubleAnimation Duration="0:0:0.4" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="InputGrid" d:IsOptimized="True"/>
+            <DoubleAnimation Duration="0:0:0.4" To="-220" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="InputGrid" d:IsOptimized="True"/>
         </Storyboard>
 
         <ItemsPanelTemplate x:Key="EmojiItemsPanelTemplate">
             <VirtualizingStackPanel Orientation="Horizontal"
                 VerticalAlignment="Top"
                 ScrollViewer.HorizontalScrollMode="Enabled"
-                ScrollViewer.VerticalScrollMode="Disabled"/>
+                ScrollViewer.VerticalScrollMode="Disabled"
+                                    Margin="0"/>
         </ItemsPanelTemplate>
-        <Storyboard x:Name="InputIn">
-            <DoubleAnimation Duration="0:0:0.4" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="InputGrid" d:IsOptimized="True"/>
-            <DoubleAnimation Duration="0:0:0.4" To="180" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="InputGrid" d:IsOptimized="True"/>
-        </Storyboard>
-        <Storyboard x:Name="InputOut">
-            <DoubleAnimation Duration="0:0:0.4" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="InputGrid" d:IsOptimized="True"/>
-            <DoubleAnimation Duration="0:0:0.4" To="-180" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="InputGrid" d:IsOptimized="True"/>
-        </Storyboard>
-
+        
     </Page.Resources>
 
     <Page.BottomAppBar>
@@ -78,132 +78,57 @@
                         <AppBarButton Grid.Column="3" Icon="Send" IsCompact="True"  Label="分享" Name="appBarButtonTranslate" 
                                       Tapped="BottomItem_Tapped"/>
                     </Grid>
-                    <ScrollViewer  Margin="0,60,0,0" Height="150"
-                                  VerticalAlignment="Top" Background="WhiteSmoke">
-                        <StackPanel Background="Transparent"
-                                  Width="250"
-                                    HorizontalAlignment="Center">
+                    <ScrollViewer  Margin="50,60,50,5" Height="150"
+                                  VerticalAlignment="Top" HorizontalAlignment="Center"  Background="WhiteSmoke">
+                        <StackPanel>
 
-                            <Grid  Margin="5">
-                                <Grid  Grid.Column="1" Background="LightGray"
-                                            Height="40" >
-                                    <TextBlock Text="更新表情包" FontSize="20"
-                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
-                                           Margin="5" Tapped="SecItemList_Tapped"
-                                       />
-                                </Grid>
-                                <Image Source="/Pics/leftGray.png" Height="40" Width="20"
-                                       Grid.Column="0"
-                                       />
-                                <Image Source="/Pics/rightGray.png" Height="40" Width="20"
-                                       Grid.Column="2"
-                                       />
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
-                            </Grid>
-                            <Grid  Margin="5">
-                                <Grid  Grid.Column="1" Background="LightGray"
-                                            Height="40" >
-                                    <TextBlock Text="打分本应用" FontSize="20"
-                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
-                                           Margin="5" Tapped="SecItemList_Tapped"
-                                       />
-                                </Grid>
-                                <Image Source="/Pics/leftGray.png" Height="40" Width="20"
-                                       Grid.Column="0"
-                                       />
-                                <Image Source="/Pics/rightGray.png" Height="40" Width="20"
-                                       Grid.Column="2"
-                                       />
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
-                            </Grid>
-                            <Grid  Margin="5">
-                                <Grid  Grid.Column="1" Background="LightGray"
-                                            Height="40" >
-                                    <TextBlock Text="提供建议" FontSize="20"
-                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
-                                           Margin="5" Tapped="SecItemList_Tapped"
-                                       />
-                                </Grid>
-                                <Image Source="/Pics/leftGray.png" Height="40" Width="20"
-                                       Grid.Column="0"
-                                       />
-                                <Image Source="/Pics/rightGray.png" Height="40" Width="20"
-                                       Grid.Column="2"
-                                       />
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
-                            </Grid>
-                            <Grid  Margin="5">
-                                <Grid  Grid.Column="1" Background="LightGray"
-                                            Height="40" >
-                                    <TextBlock Text="鼓励开发者" FontSize="20"
-                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
-                                           Margin="5" Tapped="SecItemList_Tapped"
-                                       />
-                                </Grid>
-                                <Image Source="/Pics/leftGray.png" Height="40" Width="20"
-                                       Grid.Column="0"
-                                       />
-                                <Image Source="/Pics/rightGray.png" Height="40" Width="20"
-                                       Grid.Column="2"
-                                       />
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
-                            </Grid>
-                            <Grid  Margin="5">
-                                <Grid  Grid.Column="1" Background="LightGray"
-                                            Height="40" >
-                                    <TextBlock Text="关注开发者" FontSize="20"
-                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
-                                           Margin="5" Tapped="SecItemList_Tapped"
-                                       />
-                                </Grid>
-                                <Image Source="/Pics/leftGray.png" Height="40" Width="20"
-                                       Grid.Column="0"
-                                       />
-                                <Image Source="/Pics/rightGray.png" Height="40" Width="20"
-                                       Grid.Column="2"
-                                       />
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
-                            </Grid>
-                            <Grid  Margin="5">
-                                <Grid  Grid.Column="1" Background="LightGray"
-                                            Height="40" >
-                                    <TextBlock Text="关于此应用" FontSize="20"
-                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
-                                           Margin="5" Tapped="SecItemList_Tapped"
-                                       />
-                                </Grid>
-                                <Image Source="/Pics/leftGray.png" Height="40" Width="20"
-                                       Grid.Column="0"
-                                       />
-                                <Image Source="/Pics/rightGray.png" Height="40" Width="20"
-                                       Grid.Column="2"
-                                       />
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
-                            </Grid>      
+                            <ListView
+                  Height="50"
+                  Background="WhiteSmoke"
+                  SelectionMode="None" IsItemClickEnabled="True"
+                  BorderThickness="1" BorderBrush="White"
+                  ScrollViewer.HorizontalScrollMode="Enabled" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                  ScrollViewer.VerticalScrollMode="Disabled"
+                  ItemsPanel="{StaticResource EmojiItemsPanelTemplate}">
+                                <ListView.Items>
+                                    <TextBlock Text="红色字体" Foreground="Red" Tapped="Color_Tapped"/>
+                                    <TextBlock Text="橙色字体" Foreground="Orange" Tapped="Color_Tapped"/>
+                                    <TextBlock Text="黄色字体" Foreground="Yellow" Tapped="Color_Tapped"/>
+                                    <TextBlock Text="绿色字体" Foreground="Green" Tapped="Color_Tapped"/>
+                                    <TextBlock Text="青色字体" Foreground="Cyan" Tapped="Color_Tapped"/>
+                                    <TextBlock Text="蓝色字体" Foreground="Blue" Tapped="Color_Tapped"/>
+                                    <TextBlock Text="紫色字体" Foreground="Purple" Tapped="Color_Tapped"/>
+                                    <TextBlock Text="黑色字体" Foreground="Black" Tapped="Color_Tapped"/>
+                                </ListView.Items>
+                            </ListView>
+
+                            <ListView
+                  Height="100"
+                  Background="WhiteSmoke"
+                  SelectionMode="None" IsItemClickEnabled="True"
+                  BorderThickness="1" BorderBrush="White"
+                  ScrollViewer.HorizontalScrollMode="Enabled" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                  ScrollViewer.VerticalScrollMode="Disabled"
+                  ItemsPanel="{StaticResource EmojiItemsPanelTemplate}">
+                                <ListView.Items>
+                                    <Image Source="/EmojiList/E1/e1.png" Name="暴走表情包"
+                                           Tag="ms-appx:///EmojiList/E1/e1.png"
+                                           Height="90" Width="90" Margin="0,5" Stretch="UniformToFill" Tapped="ChangeIma_Tapped"/>
+                                    <Image Source="/EmojiList/E2/e1.png" Name="科技表情包"
+                                            Tag="ms-appx:///EmojiList/E2/e1.png"
+                                            Height="90" Width="90" Margin="0,5" Stretch="UniformToFill" Tapped="ChangeIma_Tapped"/>
+                                    <Image Source="/EmojiList/E3/e1.png" Name="蘑菇头表情包"
+                                            Tag="ms-appx:///EmojiList/E3/e1.png"
+                                            Height="90" Width="90" Margin="0,5" Stretch="UniformToFill" Tapped="ChangeIma_Tapped"/>
+                                    <Image Source="/EmojiList/E5/e1.png" Name="装逼表情包"
+                                            Tag="ms-appx:///EmojiList/E5/e1.png"
+                                            Height="90" Width="90" Margin="0,5" Stretch="UniformToFill" Tapped="ChangeIma_Tapped"/>
+                                    <Image Source="/EmojiList/E4/e1.png" Name="杂项表情包"
+                                            Tag="ms-appx:///EmojiList/E4/e1.png"
+                                            Height="90" Width="90" Margin="0,5" Stretch="UniformToFill" Tapped="ChangeIma_Tapped"/>                                </ListView.Items>
+                            </ListView>
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>
@@ -236,36 +161,84 @@
         </SplitView.Pane>
 
         <Grid>
+            <Grid  Name="LeftRootGrid">
+                <SplitView 
+                IsPaneOpen="False"
+                OpenPaneLength="120"
+                Background="WhiteSmoke"
+                    Name="LeftGridSplitView"
+                >
+                    <SplitView.Pane>
+                        <Grid Background="WhiteSmoke">
+                            <StackPanel Background="Transparent"
+                                    HorizontalAlignment="Stretch"
+                                        Margin="0,60"
+                                        >
 
-               <!--主grid-->
-                <Grid Background="White"
+                                <TextBlock Text="更新表情包" FontSize="18"
+                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
+                                           Margin="5" Tapped="SecItemList_Tapped"
+                                       />
+                                <TextBlock Text="关注开发者" FontSize="18"
+                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
+                                           Margin="5" Tapped="SecItemList_Tapped"
+                                       />
+                                <TextBlock Text="打分本应用" FontSize="18"
+                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
+                                           Margin="5" Tapped="SecItemList_Tapped"
+                                       />
+                                <TextBlock Text="鼓励开发者" FontSize="18"
+                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
+                                           Margin="5" Tapped="SecItemList_Tapped"
+                                       />
+                                <TextBlock Text="关于此应用" FontSize="18"
+                                           HorizontalAlignment="Stretch"  TextAlignment="Center"  VerticalAlignment="Center"
+                                           Margin="5" Tapped="SecItemList_Tapped"
+                                       />
+                            </StackPanel>
+
+                            <TextBlock Text="提供建议" FontSize="18"
+                                           HorizontalAlignment="Stretch"  TextAlignment="Center"
+                                   VerticalAlignment="Bottom"
+                                           Margin="5,10" Tapped="SecItemList_Tapped"
+                                       />
+                            <TextBlock Text="捐赠作者" FontSize="18"
+                                           HorizontalAlignment="Stretch"  TextAlignment="Center"
+                                   VerticalAlignment="Bottom"
+                                           Margin="5,10,5,40" Tapped="SecItemList_Tapped"
+                                       />
+                        </Grid>
+                    </SplitView.Pane>
+                    <Grid>
+
+                        <!--主grid-->
+                        <Grid Background="White"
                       Margin="0,0,0,0"                      
                       SizeChanged="Grid_SizeChanged">
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="100"/>
-                    <RowDefinition Height="50"/>
-                </Grid.RowDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="100"/>
+                                <RowDefinition Height="50"/>
+                            </Grid.RowDefinitions>
 
-
-
-                <Grid Name="Preview" Grid.Row="0">
-                    <Image VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                            <!--预览图-->
+                            <Grid Name="Preview" Grid.Row="0">
+                                <Image VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                Stretch="UniformToFill" Name="back" RenderTransformOrigin="0.5,0.5" 
                >
-                        <Image.RenderTransform>
-                            <CompositeTransform/>
-                        </Image.RenderTransform>
-                    </Image>
-                    <Grid Height="250" Width="250">
-                        <Grid  Margin="-1" Background="Blue"/>
-                        <Grid  Height="250" Width="250"   Name="pictureRoot"
+                                    <Image.RenderTransform>
+                                        <CompositeTransform/>
+                                    </Image.RenderTransform>
+                                </Image>
+                                <Grid Height="250" Width="250">
+                                    <Grid  Margin="-1" Background="Blue"/>
+                                    <Grid  Height="250" Width="250"   Name="pictureRoot"
                    HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Image Height="250" Width="250" 
-                           Source="/Emoji/e1.png"
+                                        <Image Height="250" Width="250" 
+                           Source="/EmojiList/E1/e1.png" Stretch="UniformToFill"
                            Name="test" />
-                            <TextBlock Name="wordTextBlock" Text=""
+                                        <TextBlock Name="wordTextBlock" Text=""
                                    FontSize="25" TextAlignment="Center"
                                    TextWrapping="Wrap" Foreground="Blue"
                                    VerticalAlignment="Center" HorizontalAlignment="Center"
@@ -274,18 +247,19 @@
                                    TextTrimming="Clip"
                                    ManipulationMode="All" MaxLines="1"
                                />
-                            <TextBlock VerticalAlignment="Bottom"
-                                   Text="来自斗图UWP" Foreground="Gray" Visibility="Collapsed"
-                                   TextAlignment="Center" Height="20" Name="LogoTextBlock"
+                                        <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                                   Text="来自斗图UWP" Foreground="Gray"
+                                   TextAlignment="Center" Height="20"  Margin="5"
                                    />
-                        </Grid>
-                        <ProgressRing Name="NetImaProgress"
+                                    </Grid>
+                                    <ProgressRing Name="NetImaProgress"
                               Height="80" Width="80" IsActive="False"
                               />
-                    </Grid>
-                </Grid>
+                                </Grid>
+                            </Grid>
 
-                <ListView Name="Emoji"
+                            <!--表情选框-->
+                            <ListView Name="Emoji"
                   Grid.Row="1"
                   Height="100"
                   Background="WhiteSmoke"
@@ -298,19 +272,20 @@
                   ItemsPanel="{StaticResource EmojiItemsPanelTemplate}"
                   ItemClick="Emoji_ItemClick"
                   >
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="2,5" Background="Black"
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="2,5" Background="Black"
                          Width="90"  Height="90">
-                                <Image Width="90"  Height="90" Source="{Binding ima}"
+                                            <Image Width="90"  Height="90" Source="{Binding ima}"
                                Stretch="UniformToFill"
                                RequestedTheme="Light"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ListView>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ListView>
 
-                <ListView Name="EmojiWords"
+                            <!--热词选框-->
+                            <ListView Name="EmojiWords"
                   Grid.Row="3"
                   Height="50"
                   Background="WhiteSmoke"
@@ -323,43 +298,37 @@
                   ItemsPanel="{StaticResource EmojiItemsPanelTemplate}"
                   ItemClick="EmojiWords_ItemClick"
                   >
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal"  Margin="0,2">
-                                <Image Source="{Binding fIma}" Height="40" Width="20"/>
-                                <StackPanel Background="LightGreen" 
-                            Height="40" 
-                            Orientation="Horizontal"
-                            >
-                                    <TextBlock Text="{Binding words}" FontSize="22" 
-                               VerticalAlignment="Center" HorizontalAlignment="Center"
-                               Margin="0" 
-                               />
-                                    <!--<Image Source="/Pics/delect.png"  Name="EmojiWordsDelect"
-                           HorizontalAlignment="Right" Margin="5" Tapped="EmojiWordsDelect_Tapped"
-                           />-->
-                                </StackPanel>
-                                <Image Source="{Binding bIma}" Height="40" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ListView>
+                                <ListView.Items>
+                                    <TextBlock Text="你咋不能上天"  Margin="0"/>
+                                    <TextBlock Text="你够了"  Margin="0"/>
+                                    <TextBlock Text="我们走"  Margin="0"/>
+                                    <TextBlock Text="你打我呀"  Margin="0"/>
+                                    <TextBlock Text="去吧，皮卡丘！"  Margin="0"/>
+                                    <TextBlock Text="洪荒之力"  Margin="0"/>
+                                    <TextBlock Text="老司机"  Margin="0"/>
+                                    <TextBlock Text="一脸懵逼"  Margin="0"/>
+                                    <TextBlock Text="我好方"  Margin="0"/>
+                                    <TextBlock Text="小目标"  Margin="0"/>
+                                    <TextBlock Text="躺赢"  Margin="0"/>
+                                    <TextBlock Text="好套路"  Margin="0"/>
+                                </ListView.Items>
+                            </ListView>
 
-                <!--输入栏-->
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                            <!--输入栏-->
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top"
               Grid.Row="0" Height="140" Margin="0,-180,0,0"  Background="WhiteSmoke"
               Name="InputGrid" RenderTransformOrigin="0.5,0.5">
-                    <Grid.RenderTransform>
-                        <CompositeTransform/>
-                    </Grid.RenderTransform>
-                    <Grid Height="50" VerticalAlignment="Top">
-                        <Image Source="/Pics/whiteInput.png" Visibility="Visible"
+                                <Grid.RenderTransform>
+                                    <CompositeTransform/>
+                                </Grid.RenderTransform>
+                                <Grid Height="50" VerticalAlignment="Top">
+                                    <Image Source="/Pics/whiteInput.png" Visibility="Visible"
                    Stretch="UniformToFill" Name="inputLostFocus"
                    VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-                        <Image Source="/Pics/green.png"  Visibility="Collapsed"
+                                    <Image Source="/Pics/green.png"  Visibility="Collapsed"
                    Stretch="UniformToFill" Name="inputGetFocus"
                    VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-                        <TextBox FontSize="20" Height="auto" Margin="5,0"
+                                    <TextBox FontSize="20" Height="auto" Margin="5,0"
                      VerticalAlignment="Center" HorizontalAlignment="Stretch"
                          Name="sWord"
                          InputScope="Url"
@@ -369,28 +338,49 @@
                      GotFocus="sWord_GotFocus"
                      LostFocus="sWord_LostFocus"
                      />
-                    </Grid>
-                    <Grid Name="AdGrid" Height="70" VerticalAlignment="Bottom"
+                                </Grid>
+                                <Grid Name="AdGrid" Height="70" VerticalAlignment="Bottom"
                   Margin="0,0,0,20">
-                        <TextBlock Text="求支持" FontSize="25" Foreground="Red"
+                                    <TextBlock Text="求支持" FontSize="25" Foreground="Red"
                            VerticalAlignment="Center" HorizontalAlignment="Center"
                            />
-                        <JiuYouAdUniversal:AdControl Margin="0" 
+                                    <JiuYouAdUniversal:AdControl Margin="0" 
                     AdClick="AdControl_AdClick" IsCloseIconEnabled="False" HorizontalAlignment="Center"
                     ApplicationKey="01bd15c1de3fd20b9f9762c991525e9c"   AdType="Banner"/>
-                    </Grid>
-                    <Grid Name="Tips" Height="20" VerticalAlignment="Bottom"
+                                </Grid>
+                                <Grid Name="Tips" Height="20" VerticalAlignment="Bottom"
                   Background="Gray" 
                   >
-                        <TextBlock Text="请动一下手指，有效点击一次广告支持我吧"
+                                    <TextBlock Text="请动一下手指，有效点击一次广告支持我吧"
                            HorizontalAlignment="Center" Name="TipsTextBlock"
                            />
-                    </Grid>
-                </Grid>
+                                </Grid>
+                            </Grid>
 
+                        </Grid>
+
+                    </Grid>
+                </SplitView>
             </Grid>
+
+            <Grid Background="WhiteSmoke" 
+                  Height="40" VerticalAlignment="Top"
+                  >
+
+                <Image Source="/Pics/function.png" 
+                       Height="30" Width="30"
+                       Stretch="UniformToFill"
+                   HorizontalAlignment="Left" VerticalAlignment="Top"
+                   Margin="5" Name="functionBtn" Tapped="functionBtn_Tapped"
+                   />
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right"
+                           Name="CurrentEmojiPacket" Text="暴走表情包" Foreground="Black"
+                           FontSize="20" Margin="10,5"
+                           />
+            </Grid>
+            
         </Grid>
-        
+
     </SplitView>
     
 </Page>

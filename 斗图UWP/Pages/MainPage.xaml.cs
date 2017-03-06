@@ -30,14 +30,9 @@ namespace 斗图UWP
     public sealed partial class MainPage : Page
     {
         private static int BlurEffectConunt = 5;
-
         private ObservableCollection<ListInfo> ListSorce;
-        private ObservableCollection<EmojiUiContent> WordsListSorce;
-
         private WriteableBitmap new_bitmap;
-
         private StorageFile CurrentFile = null;
-
         private delegate void DoneEvent(byte[] result);
         private event DoneEvent myDoneEventDelegate;
         private bool isPlay = false;
@@ -52,70 +47,34 @@ namespace 斗图UWP
         private async void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
             setStateBar();
-            //CurrentFileLocal = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Emoji/e1.jpg"));
-            myDoneEventDelegate += MainPage_myDoneEventDelegate;
+            myDoneEventDelegate += MainPage_myDoneEventDelegate;            
             await InitEmojiIma();
-            await InitEmojiWords();
             BlurEffectInit();
         }
-
-        private async void MainPage_myDoneEventDelegate(byte[] result)
-        {
-            // Open a stream to copy the image contents to the WriteableBitmap's pixel buffer 
-            using (Stream stream = new_bitmap.PixelBuffer.AsStream())
-            {
-                await stream.WriteAsync(result, 0, result.Length);
-            }
-            back.Source = new_bitmap;
-            isPlay = false;
-        }
-
-        private async Task InitEmojiWords()
-        {
-            WordsListSorce = new ObservableCollection<EmojiUiContent>();
-            EmojiWords.ItemsSource = WordsListSorce;
-            string[] EmojiWordsList = { "MDZZ", "你咋不上天", "Lumia", "跟党走", "我爱你", "去死吧", "楼上智障", "我们走" };
-            foreach (var str in EmojiWordsList)
-            {
-                var temp = new EmojiUiContent();
-                var fileF = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Pics/left.png"));
-                using (IRandomAccessStream fileStream = await fileF.OpenAsync(FileAccessMode.Read))
-                {
-                    temp.fIma = new BitmapImage();
-                    await temp.fIma.SetSourceAsync(fileStream);
-                }
-                var fileB = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Pics/right.png"));
-                using (IRandomAccessStream fileStream = await fileB.OpenAsync(FileAccessMode.Read))
-                {
-                    temp.bIma = new BitmapImage();
-                    await temp.bIma.SetSourceAsync(fileStream);
-                }
-                temp.words = str;
-                WordsListSorce.Add(temp);
-
-                //WordsListSorce.Add(new EmojiUiContent()
-                //{
-                //    fIma = new BitmapImage(new Uri("ms-appx:///Pics/left.png")),
-                //    bIma = new BitmapImage(new Uri("ms-appx:///Pics/right.png")),
-                //    words = str
-                //});
-                //await this.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                //{
-
-                //});
-                //await Task.Delay(10);
-            }
-            //Task.Run(() => { WordWork(); });
-        }
-
+        
+        #region 初始化表情集
         private async Task InitEmojiIma()
         {
-            ListSorce = new ObservableCollection<ListInfo>();
+            var fileTemp = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///EmojiList/E1/e1.png"));
+            var folder = await fileTemp.GetParentAsync();
+            await InitEmojiIma(folder);
+        }
+        private async Task InitEmojiIma(StorageFolder folder)
+        {
+            if (ListSorce == null)
+            {
+                ListSorce = new ObservableCollection<ListInfo>();
+            }
+            else
+            {
+                while (ListSorce.Count > 0)
+                {
+                    ListSorce.RemoveAt(0);
+                }
+            }
             Emoji.ItemsSource = ListSorce;
             try
             {
-                var fileTemp = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Emoji/e1.png"));
-                var folder = await fileTemp.GetParentAsync();
                 var files = await folder.GetFilesAsync();
                 foreach (var file in files)
                 {
@@ -125,28 +84,16 @@ namespace 斗图UWP
                         await ima.SetSourceAsync(fileStream);
                     }
                     var temp = new ListInfo();
-                    temp.name = file.Name;
+                    temp.file = file;
                     temp.ima = ima;
                     ListSorce.Add(temp);
-                    //await this.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    //{
-                    //});
-                    //await Task.Delay(10);
                 }
             }
             catch (Exception)
             {
             }
-            //await Task.Run(() => { ImaWork(); });
         }
-
-        public  void ImaWork()
-        {
-        }
-
-        public /*async */void WordWork()
-        {
-        }
+        #endregion
 
         #region 页面事件
 
@@ -157,15 +104,15 @@ namespace 斗图UWP
                 var stateBar = StatusBar.GetForCurrentView();
                 await stateBar.ShowAsync();
                 stateBar.BackgroundOpacity = 1;
-                stateBar.BackgroundColor = Colors.RoyalBlue;
-                stateBar.ForegroundColor = Colors.WhiteSmoke;
+                stateBar.BackgroundColor = Colors.LightGray;
+                stateBar.ForegroundColor = Colors.Black;
             }
             //那就是在电脑上运行
             else
             {
                 //更改标题栏颜色
                 var titleBar = ApplicationView.GetForCurrentView().TitleBar;
-                titleBar.BackgroundColor = Colors.DodgerBlue;
+                titleBar.BackgroundColor = Colors.LightGray;
                 SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
             }
         }
@@ -222,7 +169,7 @@ namespace 斗图UWP
         #region 背景模糊
         private async void BlurEffectInit()
         {
-            var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Emoji/e1.png"));
+            var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///EmojiList/E1/e1.png"));
             BlurEffectInit(file);
         }
         private async void BlurEffectInit(StorageFile file)
@@ -267,6 +214,15 @@ namespace 斗图UWP
                 result[j++] = (byte)(array[i] >> 24); // Alpha
             }
             myDoneEventDelegate(result);
+        }
+        private async void MainPage_myDoneEventDelegate(byte[] result)
+        {
+            using (Stream stream = new_bitmap.PixelBuffer.AsStream())
+            {
+                await stream.WriteAsync(result, 0, result.Length);
+            }
+            back.Source = new_bitmap;
+            isPlay = false;
         }
         private void BackgroundCHange_Completed(object sender, object e)
         {
@@ -329,10 +285,8 @@ namespace 斗图UWP
             //把控件变成图像  
             RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap();
             //传入参数Image控件  
-            LogoTextBlock.Visibility = Visibility.Visible;
             await renderTargetBitmap.RenderAsync(pictureRoot);
             var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
-            LogoTextBlock.Visibility = Visibility.Collapsed;
             using (var fileStream = await sFile.OpenAsync(FileAccessMode.ReadWrite))
             {
                 var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, fileStream);
@@ -350,7 +304,6 @@ namespace 斗图UWP
             CurrentFile = sFile;
         }
         #endregion
-
 
         private async void BottomItem_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -394,9 +347,8 @@ namespace 斗图UWP
             try
             {
                 var info = (ListInfo)e.ClickedItem;
-                var path = "ms-appx:///Emoji/" + info.name;
-                var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri(path));
-                using (IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read))
+                CurrentFile = info.file;
+                using (IRandomAccessStream stream = await CurrentFile.OpenAsync(FileAccessMode.Read))
                 {
                     BitmapImage b = new BitmapImage();
                     b.SetSource(stream);
@@ -414,8 +366,8 @@ namespace 斗图UWP
         {
             try
             {
-                var temp = (EmojiUiContent)e.ClickedItem;
-                wordTextBlock.Text = temp.words;
+                var temp = (TextBlock)e.ClickedItem;
+                wordTextBlock.Text = temp.Text;
                 MakeIma();
             }
             catch (Exception ex)
@@ -444,16 +396,29 @@ namespace 斗图UWP
             var lable = textBlock.Text;
             switch (lable)
             {
-                case "更新表情包": await new MessageDialog("此功能将在下一个版本到来，敬请期待！").ShowAsync(); break;
+                case "更新表情包": await new MessageDialog("由于资金问题，此功能正在努力协调，敬请期待！").ShowAsync(); break;
                 case "提供建议": sendEmail(); break;
                 case "打分本应用": scoreApp(); break;
                 case "鼓励开发者": encourage(); break;
                 case "关注开发者": concern(); break;
+                case "捐赠作者": juanzeng(); break;
                 case "关于此应用": Frame.Navigate(typeof(About)); break;
             }
         }
 
         #region SecBottomList
+
+        /// <summary>
+        /// 捐赠
+        /// </summary>
+        private async void juanzeng()
+        {
+            DataPackage dp = new DataPackage();
+            dp.SetText("qq875626439521@outlook.com");
+            Clipboard.SetContent(dp);
+            await new MessageDialog("软件作者支付宝已经复制到您的剪切板", "请备注 斗图UWP").ShowAsync();
+        }
+
         private async Task<bool> showMsg(string title,string content,string btn1,string btn2)
         {
             try
@@ -524,10 +489,7 @@ namespace 斗图UWP
         /// </summary>
         private async void concern()
         {
-            DataPackage dp = new DataPackage();
-            dp.SetText("http://weibo.com/u/6128304159?refer_flag=1001030102");
-            Clipboard.SetContent(dp);
-            await new MessageDialog("软件作者微博已经复制到您的剪切板","提示").ShowAsync();
+            await Windows.System.Launcher.LaunchUriAsync(new Uri("http://weibo.com/u/6128304159?refer_flag=1001030102"));
         }
 
         #endregion
@@ -550,6 +512,10 @@ namespace 斗图UWP
             }
             else
             {
+                if (!Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.Phone.UI.Input.HardwareButtons"))
+                {
+                    SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+                }
                 splitView.IsPaneOpen = false;
             }
         }
@@ -595,5 +561,49 @@ namespace 斗图UWP
             dragTranslation.Y = DelaY;
         }
         #endregion
+
+        /// <summary>
+        /// UI功能按钮事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void functionBtn_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            LeftGridSplitView.IsPaneOpen = !LeftGridSplitView.IsPaneOpen;
+        }
+
+        /// <summary>
+        /// 改变文字颜色
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Color_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            Commandbar.IsOpen = false;
+            var  temp = (TextBlock)sender;
+            wordTextBlock.Foreground = temp.Foreground;
+        }
+
+        /// <summary>
+        ///改变图集
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void ChangeIma_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            try
+            {
+                Commandbar.IsOpen = false;
+                var ima = (Image)sender;
+                CurrentEmojiPacket.Text = ima.Name.ToString();
+                var tag = ima.Tag.ToString();
+                var sFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(tag));
+                var sFlieFather = await sFile.GetParentAsync();
+                await InitEmojiIma(sFlieFather);
+            }
+            catch (Exception)
+            {
+            }
+        }
     }
 }

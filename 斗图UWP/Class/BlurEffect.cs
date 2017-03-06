@@ -18,7 +18,7 @@ namespace 斗图UWP
         /// <param name="bitmap">原</param>
         /// <returns></returns>
         public static async Task<WriteableBitmap> BitmapClone(WriteableBitmap bitmap)
-        {
+        { 
             WriteableBitmap result = new WriteableBitmap(bitmap.PixelWidth, bitmap.PixelHeight);
 
             byte[] sourcePixels = Get_WriteableBitmap_bytes(bitmap);
